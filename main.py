@@ -22,13 +22,16 @@ def main():
     if "\n" in text or "\r" in text:
         print("entry must be a single line", file=sys.stderr)
         return 1
+    if any(ord(ch) < 0x20 for ch in text):
+        print("entry must not contain control characters", file=sys.stderr)
+        return 1
     out_dir = os.environ.get("OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
     tmp = os.path.join(out_dir, ".entry.txt.tmp")
     with open(tmp, "w", encoding="utf-8", newline="") as f:
         f.write(text)
     os.replace(tmp, os.path.join(out_dir, "entry.txt"))
-    print(f"wrote {len(text)} chars to {out_dir}/entry.txt")
+    print(f"wrote {len(text)} chars ({len(text.encode('utf-8'))} bytes) to {out_dir}/entry.txt")
     return 0
 
 
